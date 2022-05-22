@@ -2,6 +2,11 @@
   "name": "shell",
   "version": "0.1.0",
   "private": true,
+  "babelMacros": {
+    "twin": {
+      "preset": "emotion"
+    }
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,10 +16,22 @@
     "webpack": "5.38.1"
   },
   "dependencies": {
+    "@emotion/babel-preset-css-prop": "^11.0.0",
+    "@emotion/css": "^11.0.0",
+    "@emotion/react": "^11.0.0",
+    "@emotion/server": "^11.0.0",
+    "@emotion/styled": "^11.0.0",
     "@module-federation/nextjs-mf": "^1.1.1",
+    "firebase": "^9.8.1",
     "next": "10.2.3",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-table": "^7.8.0",
+    "tailwindcss": "^2.0.1",
+    "twin.macro": "^2.8.2",
     "webpack": "5.38.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9"
   }
 }

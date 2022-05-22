@@ -1,6 +1,7 @@
 const {
   withModuleFederation,
 } = require("@module-federation/nextjs-mf");
+const path = require('path');
 
 module.exports = {
   future: { webpack5: true },
@@ -8,6 +9,8 @@ module.exports = {
     domains: ['upload.wikimedia.org'],
   },
   webpack: (config, options) => {
+    const { isServer } = options;
+
     const mfConf = {
       name: "shell",
       library: {
@@ -15,21 +18,23 @@ module.exports = {
         name: "shell",
       },
       remotes: {
-        app1: "app1",
-        app2: "app2", 
+        app2: isServer
+        ? path.resolve(
+            __dirname,
+            '../app2/.next/server/static/runtime/app2RemoteEntry.js'
+          )
+        : 'app2', 
       },
       exposes: {
       },
     };
+    
     config.cache = false;
     withModuleFederation(config, options, mfConf);
-
     return config;
   },
 
   webpackDevMiddleware: (config) => {
-    // Perform customizations to webpack dev middleware config
-    // Important: return the modified config
     return config;
   },
 };

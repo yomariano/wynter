@@ -1,19 +1,24 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import tw from 'twin.macro'
+import Nav from '../components/nav'
+import { useAuth } from "../context/AuthContext"
+import App2 from "./dashboard"
 
 
-export default function Home() {
+const Home = () => {
+  const { user } = useAuth();
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Microfrontends Demo</title>
-        <meta name="description" content="Demo for Microfrontends using Module Federation" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div css={[tw`flex flex-col min-h-screen`, tw`bg-gradient-to-b from-purple-800 to-indigo-500`]}>
+      <div css={[tw`sticky top-0 z-50`,]}>
+        <Nav user={user} />
+      </div>
+      {user &&
+        <div css={[tw`flex flex-col h-screen`]}>
+          <App2 />
+        </div>
+      }
 
-      <main className={styles.main}>
-        Hello! This content is hosted locally.
-      </main>
     </div>
   )
 }
+
+export default Home

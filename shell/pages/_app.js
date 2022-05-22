@@ -1,11 +1,15 @@
-import Nav from '../components/nav'
-import '../styles/globals.css'
+//import '../styles/globals.css'
+import { AuthProvider } from "../context/AuthContext";
+import { GlobalStyles } from 'twin.macro'
 
 function MyApp({ Component, pageProps }) {
-  return ( 
+
+  return (
     <>
-      <Nav />
-      <Component {...pageProps} />
+      <AuthProvider>
+      <GlobalStyles />
+        <Component {...pageProps} />
+      </AuthProvider>
     </>
   )
 }

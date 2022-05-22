@@ -7,6 +7,7 @@ module.exports = {
     domains: ['upload.wikimedia.org'],
   },
   webpack: (config, options) => {
+    
     const { isServer } = options;
     const mfConf = {
       mergeRuntime: true, //experimental
@@ -19,15 +20,18 @@ module.exports = {
       remotes: {
       },
       exposes: {
-        "./luigi": "./components/luigi",
+        "./dashboard": "./components/dashboard",
       },
+      shared: []
     };
     config.cache = false;
-    withModuleFederation(config, options, mfConf);
-    if (!isServer) {
-      config.output.publicPath = "https://mf-app2.vercel.app/_next/";
-    }
 
+    withModuleFederation(config, options, mfConf);
+    config.output.publicPath = "http://localhost:3002/_next/";
+    console.log(isServer)
+    if (!isServer) {
+      config.output.publicPath = "http://localhost:3002/_next/";
+    }
     return config;
   },
 
