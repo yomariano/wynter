@@ -1,6 +1,6 @@
 
-import { createContext, useContext, useState } from "react";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createContext, useContext, useState, useEffect } from "react";
+import { GoogleAuthProvider, signInWithPopup, on } from "firebase/auth";
 import { auth } from "../configuration/firebase";
 
 const authContextDefaultValues = {
@@ -17,9 +17,17 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
-
-    // Inside AuthProvider
     const provider = new GoogleAuthProvider();
+
+    useEffect(() => {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                setUser(user);
+            } else {
+                setUser(null);
+            }
+        });
+    }, [user]);
 
     const login = () => {
         signInWithPopup(auth, provider)
@@ -30,7 +38,7 @@ export function AuthProvider({ children }) {
                 // The signed-in user info.
                 const user = result.user;
                 setUser(user);
-                console.log({ credential, token, user });
+
             })
             .catch((error) => {
                 // Handle Errors here.
@@ -47,13 +55,12 @@ export function AuthProvider({ children }) {
     const logout = () => {
         auth.signOut();
         setUser(false);
-        console.log("logout");
     };
 
     const value = {
         user,
         login,
-        logout,
+        logout
     };
 
     return (

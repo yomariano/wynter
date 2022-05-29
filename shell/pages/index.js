@@ -6,6 +6,7 @@ import App2 from "./dashboard"
 
 const Home = () => {
   const { user } = useAuth();
+
   return (
     <div css={[tw`flex flex-col min-h-screen`, tw`bg-gradient-to-b from-purple-800 to-indigo-500`]}>
       <div css={[tw`sticky top-0 z-50`,]}>

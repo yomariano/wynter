@@ -11,7 +11,7 @@ const firebaseConfig = {
   authDomain: process.env.NEXT_PUBLIC_AUTHDOMAIN,
   projectId: process.env.NEXT_PUBLIC_PROJECTID,
   storageBucket: process.env.NEXT_PUBLIC_STORAGEBUCKET,
-  messagingSenderId:process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
   appId: process.env.NEXT_PUBLIC_APPID
 };
 
@@ -66,10 +66,12 @@ function Table() {
   )
 
   const [products, setProducts] = useState([]);
+  const [list, setList] = useState([]);
   const [headers, setHeaders] = useState([]);
   const [lastVisible, setLastVisible] = useState(null);
   const [firstVisible, setFirstVisible] = useState(null);
-  const size = 25;
+  const [isNextPage, setIsNextPage] = useState(null);
+
   const columns = React.useMemo(
     () =>
       [
@@ -120,10 +122,9 @@ function Table() {
       const q = query(collection(getFirestore(), "products"), orderBy("AllowCustomerReviews"), limit(10));
 
       const querySnapshot = await getDocs(q);
-      let array = [];
-      const last = querySnapshot.docs[querySnapshot.docs.length - 1];
-      setLastVisible(last);
+      setList(querySnapshot.docs);
 
+      let array = [];
       querySnapshot.forEach((doc) => {
         array.push(doc.data())
         setHeaders(Object.keys(doc.data()))
@@ -136,40 +137,37 @@ function Table() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      let q = null;
+
+      isNextPage
+        ? q = query(collection(getFirestore(), "products"), orderBy("AllowCustomerReviews"), startAt(list[list.length - 1]), limit(10))
+        : q = query(collection(getFirestore(), "products"), orderBy("AllowCustomerReviews"), endBefore(list[0]), limit(10));
+
+      const querySnapshot = await getDocs(q);
+      setList(querySnapshot.docs);
+      let array = [];
+      querySnapshot.forEach((doc) => {
+        array.push(doc.data())
+      });
+      setProducts(array);
+    }
+
+    if(isNextPage != null){
+      fetchData();
+      setIsNextPage(null)
+    }
+
+  }, [isNextPage]);
+
   const nextPage = async () => {
-    const q = query(collection(getFirestore(), "products"), orderBy("AllowCustomerReviews"), startAt(lastVisible), limit(10));
-
-    const querySnapshot = await getDocs(q);
-    const last = querySnapshot.docs[querySnapshot.docs.length - 1];
-    setLastVisible(last);
-    const first = querySnapshot.docs[0];
-    setFirstVisible(first);
-    let array = [];
-    querySnapshot.forEach((doc) => {
-      array.push(doc.data())
-    });
-
-    setProducts(array);
+    setIsNextPage(true)
   }
 
   const previousPage = async () => {
-    const q = query(collection(getFirestore(), "products"), orderBy("AllowCustomerReviews"), endBefore(firstVisible), limit(10));
-
-    const querySnapshot = await getDocs(q);
-    const last = querySnapshot.docs[querySnapshot.docs.length - 1];
-    setLastVisible(last);
-    const first = querySnapshot.docs[0];
-    setFirstVisible(first);
-    let array = [];
-    querySnapshot.forEach((doc) => {
-      array.push(doc.data())
-    });
-    setProducts(array);
+    setIsNextPage(false)
   }
-
-  useEffect(() => {
-    console.log(products.length)
-  }, [products]);
 
   return (
     <>
